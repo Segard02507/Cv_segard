@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 
 class SectionTitle extends StatelessWidget {
   final String title;
@@ -25,7 +26,7 @@ class SectionTitle extends StatelessWidget {
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF1E3A8A),
+              color: AppColors.lunarRed,
             ),
           ),
           if (subtitle != null) ...[
@@ -33,7 +34,7 @@ class SectionTitle extends StatelessWidget {
             Text(
               subtitle!,
               style: TextStyle(
-                color: Colors.blueGrey.shade500,
+                color: AppColors.mutedText,
               ),
             ),
           ],

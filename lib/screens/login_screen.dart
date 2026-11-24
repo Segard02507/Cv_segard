@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
+import '../theme/app_colors.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -10,28 +12,21 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-
-  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
   bool _hidePassword = true;
   bool _loading = false;
-
-  // IDENTIFIANTS LOCAUX
-
-  static const String username = 'Piscas';
-  static const String password = 'piscas';
+  bool _isRegisterMode = false;
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  // FONCTION DE CONNEXION
-
-  void _login() async {
+  Future<void> _login() async {
+    FocusScope.of(context).unfocus();
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -40,30 +35,63 @@ class _LoginScreenState extends State<LoginScreen> {
       _loading = true;
     });
 
-    await Future.delayed(
-      const Duration(milliseconds: 350),
-    );
+    try {
+      if (_isRegisterMode) {
+        await ApiService.register(
+          email: _emailController.text,
+          password: _passwordController.text,
+        );
+        if (!mounted) return;
+        setState(() {
+          _loading = false;
+          _isRegisterMode = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content:
+                Text('Compte créé. Vous pouvez maintenant vous connecter.'),
+            backgroundColor: AppColors.blue,
+          ),
+        );
+        return;
+      }
 
-    if (!mounted) return;
+      // Appel réel à POST /accounts/login
+      await ApiService.login(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
 
-    setState(() {
-      _loading = false;
-    });
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+      });
 
-    if (_usernameController.text.trim() == username &&
-        _passwordController.text == password) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message),
+          backgroundColor: AppColors.red,
         ),
       );
-    } else {
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Identifiant ou mot de passe incorrect.',
+            'Erreur de connexion au serveur. Vérifiez WampServer et l\'API.',
           ),
-          backgroundColor: Color(0xFFB42318),
+          backgroundColor: AppColors.red,
         ),
       );
     }
@@ -75,24 +103,20 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Stack(
         children: [
           // ARRIERE-PLAN
-
           Container(
             height: MediaQuery.sizeOf(context).height * 0.48,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Color(0xFF1D4ED8),
-                  Color(0xFF06B6D4),
+                  AppColors.lunarRed,
+                  AppColors.lunarRedDark,
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.vertical(
-                bottom: Radius.circular(38),
-              ),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(38)),
             ),
           ),
-
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -100,51 +124,42 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   children: [
                     const SizedBox(height: 26),
-
                     // LOGO
-
                     Container(
                       height: 76,
                       width: 76,
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: Colors.white24,
-                        ),
+                        border: Border.all(color: Colors.white24),
                       ),
                       child: const Icon(
                         Icons.badge_outlined,
-                        color: Color(0xFF22D3EE),
+                        color: AppColors.honey,
                         size: 40,
                       ),
                     ),
-
                     const SizedBox(height: 18),
-
                     const Text(
-                      'Bienvenue',
+                      'OUVERT',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 30,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-
                     const SizedBox(height: 7),
-
                     Text(
-                      'Connecte-toi pour découvrir mon univers',
+                      _isRegisterMode
+                          ? 'Crée ton compte pour accéder au CV'
+                          : 'Connecte-toi chez Segard',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.75),
                       ),
                     ),
-
                     const SizedBox(height: 44),
-
                     // FORMULAIRE
-
                     Card(
                       child: Padding(
                         padding: const EdgeInsets.all(22),
@@ -153,76 +168,83 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Connexion',
-                                style: TextStyle(
+                              Text(
+                                _isRegisterMode ? 'Inscription' : 'Connexion',
+                                style: const TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.w800,
-                                  color: Color(0xFF1E3A8A),
+                                  color: Color.fromARGB(255, 239, 240, 241),
                                 ),
                               ),
-
                               const SizedBox(height: 6),
-
                               Text(
-                                'Entre tes identifiants pour continuer.',
-                                style: TextStyle(
-                                  color: Colors.blueGrey.shade500,
-                                ),
+                                _isRegisterMode
+                                    ? 'Enregistre ton adresse e-mail et ton mot de passe.'
+                                    : 'Entre tes identifiants pour continuer.',
+                                style:
+                                    const TextStyle(color: Color(0xFFB8C0CC)),
                               ),
-
                               const SizedBox(height: 24),
 
-                              // IDENTIFIANT
-
                               const Text(
-                                'Identifiant',
+                                'Adresse e-mail',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
+                                  color: Color.fromARGB(255, 239, 240, 241),
                                 ),
                               ),
-
                               const SizedBox(height: 8),
-
                               TextFormField(
-                                controller: _usernameController,
+                                controller: _emailController,
+                                keyboardType: TextInputType.emailAddress,
                                 textInputAction: TextInputAction.next,
                                 decoration: const InputDecoration(
-                                  hintText: 'Ex. admin',
+                                  hintText: 'Ex. segard@exemple.com',
+                                  hintStyle: TextStyle(
+                                    color: Color(0xFF9CA3AF),
+                                  ),
                                   prefixIcon: Icon(
-                                    Icons.person_outline,
+                                    Icons.email_outlined,
+                                    color: Color(0xFFB8C0CC),
                                   ),
                                 ),
+                                style: const TextStyle(
+                                  color: Color(0xFFE5E7EB),
+                                ),
                                 validator: (value) {
-                                  if (value == null || value.trim().isEmpty) {
-                                    return 'Saisis ton identifiant';
+                                  final trimmed = value?.trim() ?? '';
+                                  if (trimmed.isEmpty) {
+                                    return 'Saisis ton adresse e-mail';
                                   }
-
+                                  if (!trimmed.contains('@') ||
+                                      !trimmed.contains('.')) {
+                                    return 'Adresse e-mail invalide';
+                                  }
                                   return null;
                                 },
                               ),
-
                               const SizedBox(height: 18),
-
                               // MOT DE PASSE
-
                               const Text(
                                 'Mot de passe',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
+                                  color: Color.fromARGB(255, 239, 240, 241),
                                 ),
                               ),
-
                               const SizedBox(height: 8),
-
                               TextFormField(
                                 controller: _passwordController,
                                 obscureText: _hidePassword,
                                 onFieldSubmitted: (_) => _login(),
                                 decoration: InputDecoration(
                                   hintText: 'Ton mot de passe',
+                                  hintStyle: const TextStyle(
+                                    color: Color(0xFF9CA3AF),
+                                  ),
                                   prefixIcon: const Icon(
                                     Icons.lock_outline,
+                                    color: Color(0xFFB8C0CC),
                                   ),
                                   suffixIcon: IconButton(
                                     onPressed: () {
@@ -234,29 +256,33 @@ class _LoginScreenState extends State<LoginScreen> {
                                       _hidePassword
                                           ? Icons.visibility_outlined
                                           : Icons.visibility_off_outlined,
+                                      color: const Color(0xFFB8C0CC),
                                     ),
                                   ),
+                                ),
+                                style: const TextStyle(
+                                  color: Color(0xFFE5E7EB),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Saisis ton mot de passe';
                                   }
 
+                                  if (value.length < 6) {
+                                    return '6 caractères minimum requis';
+                                  }
                                   return null;
                                 },
                               ),
-
                               const SizedBox(height: 24),
-
-                              // BOUTON CONNEXION
-
+                              // BOUTON CONNEXION / INSCRIPTION
                               SizedBox(
                                 width: double.infinity,
                                 height: 52,
                                 child: FilledButton(
                                   onPressed: _loading ? null : _login,
                                   style: FilledButton.styleFrom(
-                                    backgroundColor: const Color(0xFFF59E0B),
+                                    backgroundColor: AppColors.lunarRedDark,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(14),
                                     ),
@@ -270,13 +296,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                             color: Colors.white,
                                           ),
                                         )
-                                      : const Row(
+                                      : Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            Text('Se connecter'),
-                                            SizedBox(width: 9),
-                                            Icon(
+                                            Text(
+                                              _isRegisterMode
+                                                  ? 'Créer le compte'
+                                                  : 'Se connecter',
+                                            ),
+                                            const SizedBox(width: 9),
+                                            const Icon(
                                               Icons.arrow_forward,
                                               size: 18,
                                             ),
@@ -284,19 +314,30 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ),
                                 ),
                               ),
+                              const SizedBox(height: 10),
+
+                              Center(
+                                child: TextButton(
+                                  onPressed: _loading
+                                      ? null
+                                      : () {
+                                          setState(() {
+                                            _isRegisterMode = !_isRegisterMode;
+                                          });
+                                        },
+                                  child: Text(
+                                    _isRegisterMode
+                                        ? 'Déjà un compte ? Se connecter'
+                                        : 'Pas encore de compte ? S\'inscrire',
+                                    style: const TextStyle(
+                                      color: AppColors.orange,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 18),
-
-                    Text(
-                      'Application personnelle • CV & Portfolio',
-                      style: TextStyle(
-                        color: Colors.blueGrey.shade500,
-                        fontSize: 12,
                       ),
                     ),
                   ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/app_data.dart';
+import '../theme/app_colors.dart';
 import '../widgets/section_title.dart';
 
 import 'familly_screen.dart';
@@ -120,8 +121,8 @@ class CvPage extends StatelessWidget {
             borderRadius: BorderRadius.circular(24),
             gradient: const LinearGradient(
               colors: [
-                Color(0xFF1D4ED8),
-                Color(0xFF06B6D4),
+                AppColors.lunarRed,
+                AppColors.orange,
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -131,12 +132,12 @@ class CvPage extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 48,
-                backgroundColor: const Color(0xFFF59E0B),
+                backgroundColor: AppColors.honey,
                 child: Text(
                   AppData.fullName.isNotEmpty ? AppData.fullName[0] : 'J',
                   style: const TextStyle(
                     fontSize: 38,
-                    color: Color(0xFF1E3A8A),
+                    color: AppColors.lunarRedDark,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -156,7 +157,7 @@ class CvPage extends StatelessWidget {
                 AppData.headline,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Color(0xFF67E8F9),
+                  color: AppColors.paleHoney,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -195,7 +196,7 @@ class CvPage extends StatelessWidget {
             AppData.about,
             style: TextStyle(
               height: 1.55,
-              color: Color(0xFF334155),
+              color: AppColors.text,
             ),
           ),
         ),
@@ -268,7 +269,7 @@ class CvPage extends StatelessWidget {
                       children: [
                         const Icon(
                           Icons.language,
-                          color: Color(0xFFD97706),
+                          color: AppColors.orange,
                           size: 19,
                         ),
                         const SizedBox(width: 10),
@@ -315,7 +316,7 @@ class CvPage extends StatelessWidget {
           child: Text(
             'Merci de visiter mon profil.',
             style: TextStyle(
-              color: Color(0xFF2563EB),
+              color: AppColors.lunarRed,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -375,12 +376,12 @@ class _TimelineCard extends StatelessWidget {
               height: 42,
               width: 42,
               decoration: BoxDecoration(
-                color: const Color(0xFFE0F2FE),
+                color: AppColors.paleBlue,
                 borderRadius: BorderRadius.circular(13),
               ),
               child: Icon(
                 icon,
-                color: const Color(0xFF2563EB),
+                color: AppColors.blue,
               ),
             ),
             const SizedBox(width: 13),
@@ -391,7 +392,7 @@ class _TimelineCard extends StatelessWidget {
                   Text(
                     period.toUpperCase(),
                     style: const TextStyle(
-                      color: Color(0xFFD97706),
+                      color: AppColors.honey,
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
                     ),
@@ -407,14 +408,14 @@ class _TimelineCard extends StatelessWidget {
                   Text(
                     subtitle,
                     style: const TextStyle(
-                      color: Color(0xFF0369A1),
+                      color: AppColors.blue,
                     ),
                   ),
                   const SizedBox(height: 7),
                   Text(
                     detail,
                     style: const TextStyle(
-                      color: Color(0xFF475569),
+                      color: AppColors.mutedText,
                       height: 1.4,
                     ),
                   ),
@@ -447,13 +448,13 @@ class _SkillChip extends StatelessWidget {
           : Icon(
               icon,
               size: 15,
-              color: const Color(0xFF0369A1),
+              color: AppColors.lunarRed,
             ),
       label: Text(label),
-      backgroundColor: const Color(0xFFEAF6FD),
+      backgroundColor: AppColors.paleHoney,
       side: BorderSide.none,
       labelStyle: const TextStyle(
-        color: Color(0xFF075985),
+        color: AppColors.lunarRedDark,
         fontWeight: FontWeight.w600,
         fontSize: 12,
       ),

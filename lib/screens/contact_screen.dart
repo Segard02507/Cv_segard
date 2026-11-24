@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../data/app_data.dart';
+import '../theme/app_colors.dart';
 import '../widgets/section_title.dart';
 
 class ContactScreen extends StatelessWidget {
@@ -43,8 +44,8 @@ class ContactScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(22),
             gradient: const LinearGradient(
               colors: [
-                Color(0xFF1D4ED8),
-                Color(0xFF06B6D4),
+                AppColors.blue,
+                AppColors.lunarRed,
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -55,7 +56,7 @@ class ContactScreen extends StatelessWidget {
             children: [
               Icon(
                 Icons.connect_without_contact,
-                color: Color(0xFF22D3EE),
+                color: AppColors.honey,
                 size: 36,
               ),
               SizedBox(height: 14),
@@ -148,7 +149,7 @@ class ContactScreen extends StatelessWidget {
               children: [
                 Icon(
                   Icons.info_outline,
-                  color: Color(0xFF0284C7),
+                  color: AppColors.orange,
                 ),
                 SizedBox(width: 10),
                 Expanded(
@@ -157,7 +158,7 @@ class ContactScreen extends StatelessWidget {
                     'Remplace les valeurs de démonstration par '
                     'tes vraies coordonnées dans app_data.dart.',
                     style: TextStyle(
-                      color: Color(0xFF475569),
+                      color: AppColors.mutedText,
                       height: 1.4,
                     ),
                   ),
@@ -200,12 +201,12 @@ class _ContactTile extends StatelessWidget {
           height: 42,
           width: 42,
           decoration: BoxDecoration(
-            color: const Color(0xFFE0F2FE),
+            color: AppColors.paleBlue,
             borderRadius: BorderRadius.circular(13),
           ),
           child: Icon(
             icon,
-            color: const Color(0xFF0369A1),
+            color: AppColors.blue,
           ),
         ),
         title: Text(
@@ -222,7 +223,7 @@ class _ContactTile extends StatelessWidget {
         trailing: const Icon(
           Icons.copy_rounded,
           size: 18,
-          color: Color(0xFF64748B),
+          color: AppColors.mutedText,
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
+import 'theme/app_colors.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,27 +17,28 @@ class CvFlutterApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFFF0F9FF),
+        scaffoldBackgroundColor: AppColors.background,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2563EB),
-          primary: const Color(0xFF2563EB),
-          secondary: const Color(0xFF06B6D4),
-          tertiary: const Color(0xFFF59E0B),
+          seedColor: AppColors.blue,
+          primary: AppColors.blue,
+          secondary: AppColors.orange,
+          tertiary: AppColors.honey,
+          error: AppColors.red,
         ),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF2563EB),
+          backgroundColor: AppColors.blue,
           foregroundColor: Colors.white,
           centerTitle: false,
           elevation: 0,
         ),
         cardTheme: CardThemeData(
-          color: Colors.white,
+          color: AppColors.surface,
           elevation: 3,
-          shadowColor: const Color(0xFF2563EB),
+          shadowColor: AppColors.lunarRed,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
             side: const BorderSide(
-              color: Color(0xFFBAE6FD),
+              color: AppColors.paleHoney,
             ),
           ),
         ),
